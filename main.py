@@ -42,7 +42,7 @@ def main():
             process = 'null'
         
         # Heartbeat worker and indicator
-        print(f"Heartbeat {counter}: Last action: {last}, Process: {process}")
+        print(f"Heartbeat {counter}: Got a registry event for {last} at {process}")
         counter += 1
         
         pygame.time.delay(1000)  # Delay to prevent spamming the console
