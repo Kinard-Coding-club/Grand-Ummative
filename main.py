@@ -54,6 +54,8 @@ def main():
                 print(f"Error in event handling: {e}")
                 print(traceback.format_exc())
                 
+            # \/ Main code goes below this comment \/
+
     except KeyboardInterrupt:
         print("\nHeartbeat Worker stopped by user.")
     except Exception as e:
