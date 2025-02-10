@@ -1,3 +1,4 @@
+#headers
 import subprocess
 import sys
 import pygame
@@ -44,9 +45,7 @@ def main():
         # Heartbeat worker and indicator
         print(f"Heartbeat {counter}: Got a registry event for {last} at {process}")
         counter += 1
-        
-        pygame.time.delay(1000)  # Delay to prevent spamming the console
-
+        # Place pygame code under this
     pygame.quit()
     print(f"Heartbeat worker stopped after {counter} heartbeats.")
 
