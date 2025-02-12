@@ -1,1 +1,1 @@
-# We will put our code here!
+print("----- DO NOT CLOSE THIS WINDOW! -----")
