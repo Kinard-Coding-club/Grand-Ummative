@@ -10,8 +10,6 @@
 ![GitHub issues](https://img.shields.io/github/issues/Kinard-Coding-Club/Grand-Ummative)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/Kinard-Coding-Club/Grand-Ummative)
 ![Python](https://img.shields.io/badge/Python-3.9-blue?logo=python)
-![C](https://img.shields.io/badge/C-Programming-blue?logo=c)
-![Shell](https://img.shields.io/badge/Shell-Scripting-darkgreen?logo=gnu-bash)
 ![GitHub open issues](https://img.shields.io/github/issues/Kinard-Coding-Club/Grand-Ummative)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed/Kinard-Coding-Club/Grand-Ummative)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Kinard-Coding-Club/Grand-Ummative)
