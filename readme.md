@@ -18,8 +18,10 @@ You are a monkey who's goal is to save your one and only friend. Escape the jung
 
 >[!IMPORTANT]
 >From Adrian:
+>
 >This repository does **NOT** recive regular updates. Issues will not typycally be read.
->However, I will push updates only if there is a MAJOR issue.
+>However, I will push updates only if there is a MAJOR issue completely disabling the game function or causing a security issue.
+>
 >On this note, requirements will not change.
 
 ## Requirements:
