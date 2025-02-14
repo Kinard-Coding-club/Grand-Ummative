@@ -16,7 +16,6 @@ process = null
 print("----- DO NOT CLOSE THIS WINDOW! -----")
 def main():
     pygame.init()
-    # Place your pygame code under this!
     if process != null:
         print(f"{line}:Heartbeat {counter}: Got a registry event at {last} using {process}")
 if __name__ == "__main__":
