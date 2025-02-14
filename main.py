@@ -6,7 +6,6 @@ import os
 import random
 import time
 
-
 #Initalize all variables
 counter = 0
 line = 0
