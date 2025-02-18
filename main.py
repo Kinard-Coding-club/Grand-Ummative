@@ -11,9 +11,7 @@ counter = 0
 line = 0
 last = 'null'
 process = 'null'
-docker = 'false'
-
-# Start
+#Start
 print("----- DO NOT CLOSE THIS WINDOW! -----")
 if os.name == 'nt':
     print("Using NTOS (Not a dockerable!)")
@@ -27,28 +25,10 @@ else:
             docker = 'true'
 
 def main():
-    if docker == 'true':
-        import pygameweb
-        pygameweb.init()
-        pygame.init()
-        screen = pygame.display.set_mode((640, 480))
-        pygame.display.set_caption("Pygame Web Example")
-
-        running = True
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-
-            screen.fill((0, 0, 0))
-            pygame.display.flip()
-
-        pygame.quit()
-    else:
-        pygame.init()
-        if process != 'null':
-            print(f"{line}:Heartbeat {counter}: Got a registry event at {last} using {process}")
-
+    pygame.init()
+    
+    if process != null:
+        print(f"{line}:Heartbeat {counter}: Got a registry event at {last} using {process}")
 if __name__ == "__main__":
     main()
 #end
