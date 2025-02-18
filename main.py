@@ -22,7 +22,7 @@ def main():
     global counter, line, last, process, key, location  # Declare global variables
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption("🗿 I ate the name for lunch. Good game, I promise!")
+    pygame.display.set_caption("🗿 I ate the name for lunch. Good game I promise")
     
     running = True
     while running:
