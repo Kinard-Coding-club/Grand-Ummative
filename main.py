@@ -53,8 +53,8 @@ def main():
             print(f"{line}:Heartbeat {counter}: Got a registry event at {last} using {process}")
     
     pygame.quit()
-    sys.exit()
     print(10/0)
+    sys.exit()
 
 if __name__ == "__main__":
     main()
