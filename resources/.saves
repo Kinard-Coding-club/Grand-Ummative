@@ -1,0 +1,16 @@
+# This file contains all data for save files and possible values.
+
+#HEADER
+def template():
+    0 = ['0', '0', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000']
+
+# define all possible values for items
+null = '00000000-0000-0000-0000-000000000000'
+
+
+# define all possible values for save positions
+
+# define all possible values for runs
+
+# list runs
+#ENDIF
