@@ -90,9 +90,6 @@ def main():
         
         player()
         if process != 'null':
-            def player():
-            def enemy(bob):
-                    
             print(f"{line}:Heartbeat {counter}: Got a registry event at {last} using {process}")
             
     pygame.quit()
