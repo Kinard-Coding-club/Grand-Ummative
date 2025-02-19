@@ -25,7 +25,7 @@
 > - (Frameworks)
 > - (Package managers)
 > - (Disk space)
-> - (RAM needed)
+> 8 gigs (RAM needed)
 
 ## Error guide:
 ### Error code
