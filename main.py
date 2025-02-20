@@ -1,23 +1,43 @@
-# Headers
-import pygame
+#headers
+global debug
+debug = True
 import traceback
 import sys
 import os
 import random
 import time
+try:
+    import pygame
+    if not pygame.display.get_init():
+        raise ImportError("Pygame display module could not be initialized.")
+except ImportError as e:
+    print(f"Error: {e}")
+    if debug == True:
+        print("Logic and console will still execute.")
+    else:
+        print("Exiting...")
+        sys.exit()
+#Headers end
 
 # Initialize all variables
 
-global counter, line, last, process, key, location
+global counter, line, last, process, key, location, playerHp, playerX, playerY, playerSpeed, playerJump, playerJumping
+debug = False
 counter = 0
 line = 0
 last = 'null'
 process = 'null'
 key = 'null'
 location = 'loader'
-
+playerHp = 100
+playerX = 0
+playerY = 0
+playerSpeed = 5
+playerJump = 10
+playerJumping = False
 #Start
 print("----- DO NOT CLOSE THIS WINDOW! -----")
+print("Console has been opened. Press [Enter] to dump all variables.")
 def main():
     global counter, line, last, process, key, location  # Declare global variables
     pygame.init()
@@ -35,6 +55,7 @@ def main():
                     last = 'K_RETURN'
                     process = 'KEYDOWN-HANDLER'
                     key = 'RETURN'
+                    print(f"counter: {counter}, line: {line}, last: {last}, process: {process}, key: {key}, location: {location}, playerHp: {playerHp}, playerX: {playerX}, playerY: {playerY}, playerSpeed: {playerSpeed}, playerJump: {playerJump}, playerJumping: {playerJumping}, debug: {debug}")
                 elif event.key == pygame.K_ESCAPE:
                     key = 'ESCAPE'
                     last = 'K_ESCAPE'
@@ -74,28 +95,79 @@ def main():
         screen.fill((0, 0, 0))
         pygame.display.flip()
         # Code under here
+        def goto(room):
+            print(f"Room has been changed to Room changed to {room}")
+            location = room
+            enemy(0, 'destroy')
+        
+        if location == 'Menu':
+            # Code to draw the menu room
+            background = pygame.image.load("/resources/sprites/menu.png")
+            screen.blit(background, (0, 0))
+
+
         def player():
             print(f"{line}:Heartbeat {counter}: Player is at {location}")
         
-        def enemy(name):
-            if name == 0:
-                print("Example enemy")
-                pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(100, 100, 50, 50))
-            elif name == 1:
-                print("Enemy 1 has been spawned.")
-                sprite1 = "/resources/sprites/enemy1.png"
-                print(f"{sprite1}")
-            else:
-                print("Error, enemy does not exist.")
+        def killPlayer():
+            playerHp = 0
+            if debug == True:
+                print(f"Got a player kill event. Player HP is now {playerHp}. Debug flag is set, wfi.")
+                input("Press enter to continue...")
+                goto('gameover')
+            print(f"Got a player kill event. Player HP is now {playerHp}. Debug flag is not set, automatically changing rooms.")
+            goto('gameover')
+            
+
         
+        def enemy(name, func):
+            if func == 'draw':
+                if name == 0:
+                    print("Example enemy")
+                    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(100, 100, 50, 50))
+                    player_rect = pygame.Rect(playerX, playerY, 50, 50)
+                    enemy_rect = pygame.Rect(100, 100, 50, 50)
+                    if player_rect.colliderect(enemy_rect):
+                        killPlayer()
+                elif name == 1:
+                    print("Enemy 1 has been spawned.")
+                    sprite1 = "/resources/sprites/enemy1.png"
+                    try:
+                        print(f"{sprite1}")
+                    except:
+                        print("Failed to load sprite.")
+                        pygame.draw.circle(screen, (0, 255, 0), (150, 150), 25)
+                else:
+                    print("Error, enemy does not exist.")
+            elif func == 'destroy':
+                if name == 0:
+                    print("All instances under Enemy have been destroyed")
+                elif name == 1:
+                    print("Enemy 1 has been destroyed.")
+                else:
+                    print("Error, enemy does not exist.")
+        enemy(0)
+        if playerHp == 0:
+            goto('gameover')
+
         player()
+        # Code above here
         if process != 'null':
-            print(f"{line}:Heartbeat {counter}: Got a registry event at {last} using {process}")
+            if debug == True:
+                print(f"{line}:Heartbeat {counter}: Got a registry event at {last} using {process}")
     
     pygame.quit()
-    print(10/0)
+    print(10/0) # This is just a joke
     sys.exit()
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"exception: {e}")
+        if debug == True:
+            print("All other logic will be executed.")
+        else:
+            print("Exiting...")
+            sys.exit()
 #end
