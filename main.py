@@ -1,6 +1,10 @@
 #headers
+print("----- DO NOT CLOSE THIS WINDOW! -----")
 global debug
 debug = True
+if debug == True:
+    print("Debug mode is enabled.")
+    print("Importing modules...")
 import traceback
 import sys
 import os
@@ -18,9 +22,13 @@ except ImportError as e:
         print("Exiting...")
         sys.exit()
 #Headers end
-
+def log(Message):
+    if debug == True:
+        print(Message)
+    else:
+        pass
+log('Initalizing variables...')
 # Initialize all variables
-
 global counter, line, last, process, key, location, playerHp, playerX, playerY, playerSpeed, playerJump, playerJumping
 debug = False
 counter = 0
@@ -36,8 +44,7 @@ playerSpeed = 5
 playerJump = 10
 playerJumping = False
 #Start
-print("----- DO NOT CLOSE THIS WINDOW! -----")
-print("Console has been opened. Press [Enter] to dump all variables.")
+log("Variables have been initialized. Press [ENTER] at any time to dump variables.")
 def main():
     global counter, line, last, process, key, location  # Declare global variables
     pygame.init()
@@ -55,7 +62,8 @@ def main():
                     last = 'K_RETURN'
                     process = 'KEYDOWN-HANDLER'
                     key = 'RETURN'
-                    print(f"counter: {counter}, line: {line}, last: {last}, process: {process}, key: {key}, location: {location}, playerHp: {playerHp}, playerX: {playerX}, playerY: {playerY}, playerSpeed: {playerSpeed}, playerJump: {playerJump}, playerJumping: {playerJumping}, debug: {debug}")
+                    if debug == True:
+                        print(f"counter: {counter}, line: {line}, last: {last}, process: {process}, key: {key}, location: {location}, playerHp: {playerHp}, playerX: {playerX}, playerY: {playerY}, playerSpeed: {playerSpeed}, playerJump: {playerJump}, playerJumping: {playerJumping}, debug: {debug}")
                 elif event.key == pygame.K_ESCAPE:
                     key = 'ESCAPE'
                     last = 'K_ESCAPE'
@@ -95,6 +103,15 @@ def main():
         screen.fill((0, 0, 0))
         pygame.display.flip()
         # Code under here
+        def load(room):
+            location = 'loader'
+            delay = random.randint(5, 8)
+            background = pygame.image.load(f"/resources/sprites/loader.png")
+            print(f"Loading room: {room}. Please wait {delay} seconds.")
+            time.sleep(delay)
+            print(f"Room {room} loaded.")
+            location = room
+
         def goto(room):
             print(f"Room has been changed to Room changed to {room}")
             location = room
@@ -104,9 +121,49 @@ def main():
             # Code to draw the menu room
             background = pygame.image.load("/resources/sprites/menu.png")
             screen.blit(background, (0, 0))
+            play_button = pygame.image.load("/resources/sprites/play_button.png")
+            play_button_rect = play_button.get_rect(center=(400, 300))
+            screen.blit(play_button, play_button_rect.topleft)
+            
+            mouse_pos = pygame.mouse.get_pos()
+            mouse_click = pygame.mouse.get_pressed()
+            
+            if play_button_rect.collidepoint(mouse_pos):
+                if mouse_click[0]:  # Left mouse button clicked
+                    load(1)
+        elif location == 'gameover':
+            background = pygame.image.load("/resources/sprites/gameover.png")
+            screen.blit(background, (0, 0))
+            print("Game over. Press [ENTER] to exit.")
+            if event.key == pygame.K_RETURN:
+                load('1')
+
 
 
         def player():
+            global playerX, playerY, playerSpeed, playerJump, playerJumping
+
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                playerX -= playerSpeed
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                playerX += playerSpeed
+            if keys[pygame.K_UP] or keys[pygame.K_w]:
+                playerY -= playerSpeed
+            if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                playerY += playerSpeed
+            if keys[pygame.K_SPACE] and not playerJumping:
+                playerJumping = True
+                playerY -= playerJump
+
+            if playerJumping:
+                playerY += playerJump // 2  # Simulate gravity
+                if playerY >= 0:  # Assuming ground level is y = 0
+                    playerY = 0
+                    playerJumping = False
+
+            player_rect = pygame.Rect(playerX, playerY, 50, 50)
+            pygame.draw.rect(screen, (0, 0, 255), player_rect)
             print(f"{line}:Heartbeat {counter}: Player is at {location}")
         
         def killPlayer():
@@ -153,11 +210,12 @@ def main():
         player()
         # Code above here
         if process != 'null':
-            print(f"{line}:Heartbeat {counter}: Got a registry event at {last} using {process}")
+            if debug == True:
+                print(f"{line}:Heartbeat {counter}: Got a registry event at {last} using {process}")
     
     pygame.quit()
-    print(10/0) # This is just a joke
     sys.exit()
+    print(10/0) # This line will never be reached as it is placed after an exit statement. Its just a joke.
 
 if __name__ == "__main__":
     try:
