@@ -153,8 +153,7 @@ def main():
         player()
         # Code above here
         if process != 'null':
-            if debug == True:
-                print(f"{line}:Heartbeat {counter}: Got a registry event at {last} using {process}")
+            print(f"{line}:Heartbeat {counter}: Got a registry event at {last} using {process}")
     
     pygame.quit()
     print(10/0) # This is just a joke
