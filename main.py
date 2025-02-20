@@ -103,6 +103,29 @@ def main():
         screen.fill((0, 0, 0))
         pygame.display.flip()
         # Code under here
+        # Tileset handler
+        class tilesetHandler:
+            def __init__(self, tileset_path, tileset_size):
+                self.tileset = pygame.image.load(tileset_path)
+                self.tileset_size = tileset_size
+                self.tile_map = {}
+            
+            def add_tile(self, tile_index, tile_id):
+                x = (tile_index % (self.tileset.get_width() // self.tile_size)) * self.tile_size
+                y = (tile_index // (self.tileset.get_width() // self.tile_size)) * self.tile_size
+                self.tile_map[tile_id] = self.tileset.subsurface(pygame.Rect(x, y, self.tile_size, self.tile_size))
+            
+            def get_tile(self, tile_id):
+                return self.tile_map.get(tile_id, None)
+            
+            def draw(self, screen, floor_layout, camera_x, camera_y):
+                for row_index, row in enumerate(floor_layout):
+                    for col_index, tile_id in enumerate(row):
+                        tile = self.get_tile(tile_id)
+                        if tile:
+                            screen.blit(tile, (col_index * self.tile_size - camera_x, row_index * self.tile_size - camera_y))
+
+        # Room LOADER
         def load(room):
             location = 'loader'
             delay = random.randint(5, 8)
@@ -112,11 +135,13 @@ def main():
             print(f"Room {room} loaded.")
             location = room
 
+        # Room CHANGER
         def goto(room):
             print(f"Room has been changed to Room changed to {room}")
             location = room
             enemy(0, 'destroy')
         
+        # Room HANDLER
         if location == 'Menu':
             # Code to draw the menu room
             background = pygame.image.load("/resources/sprites/menu.png")
@@ -137,9 +162,15 @@ def main():
             print("Game over. Press [ENTER] to exit.")
             if event.key == pygame.K_RETURN:
                 load('1')
+        elif location == '1':
+            background = pygame.image.load("/resources/sprites/room1.png")
+            screen.blit(background, (0, 0))
 
+            enemy(1, 'draw')
 
+        # Remember that the loader, changer, and handler are all different things!
 
+        # Player handler
         def player():
             global playerX, playerY, playerSpeed, playerJump, playerJumping
 
@@ -166,6 +197,7 @@ def main():
             pygame.draw.rect(screen, (0, 0, 255), player_rect)
             print(f"{line}:Heartbeat {counter}: Player is at {location}")
         
+        # Player kill event
         def killPlayer():
             playerHp = 0
             if debug == True:
@@ -176,7 +208,7 @@ def main():
             goto('gameover')
             
 
-        
+        # Enemy handler
         def enemy(name, func):
             if func == 'draw':
                 if name == 0:
@@ -204,6 +236,8 @@ def main():
                 else:
                     print("Error, enemy does not exist.")
         enemy(0)
+
+        # Health handler
         if playerHp == 0:
             goto('gameover')
 
