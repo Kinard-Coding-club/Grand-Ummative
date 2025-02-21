@@ -29,8 +29,9 @@ def log(Message):
         pass
 log('Initalizing variables...')
 # Initialize all variables
-global counter, line, last, process, key, location, playerHp, playerX, playerY, playerSpeed, playerJump, playerJumping
+global counter, line, last, process, key, location, playerHp, playerX, playerY, playerSpeed, playerJump, playerJumping, tile_size
 debug = False
+tile_size = 128
 counter = 0
 line = 0
 last = 'null'
@@ -103,33 +104,22 @@ def main():
         screen.fill((0, 0, 0))
         pygame.display.flip()
         # Code under here
-        # Tileset handler
-        class tilesetHandler:
-            def __init__(self, tileset_path, tileset_size):
-                self.tileset = pygame.image.load(tileset_path)
-                self.tileset_size = tileset_size
-                self.tile_map = {}
-            
-            def add_tile(self, tile_index, tile_id):
-                x = (tile_index % (self.tileset.get_width() // self.tile_size)) * self.tile_size
-                y = (tile_index // (self.tileset.get_width() // self.tile_size)) * self.tile_size
-                self.tile_map[tile_id] = self.tileset.subsurface(pygame.Rect(x, y, self.tile_size, self.tile_size))
-            
-            def get_tile(self, tile_id):
-                return self.tile_map.get(tile_id, None)
-            
-            def draw(self, screen, floor_layout, camera_x, camera_y):
-                for row_index, row in enumerate(floor_layout):
-                    for col_index, tile_id in enumerate(row):
-                        tile = self.get_tile(tile_id)
-                        if tile:
-                            screen.blit(tile, (col_index * self.tile_size - camera_x, row_index * self.tile_size - camera_y))
+
+        # Tile draw function
+        def draw_tiles(screen, tileset, tile_images):
+            for row in range(len(tileset)):
+                for col in range(len(tileset[row])):
+                    tile_type = tileset[row][col]
+                    if tile_type != 0:  # Skip dead space
+                        tile_image = tile_images[tile_type]
+                        screen.blit(tile_image, (col * tile_size, row * tile_size))
+
 
         # Room LOADER
         def load(room):
             location = 'loader'
             delay = random.randint(5, 8)
-            background = pygame.image.load(f"/resources/sprites/loader.png")
+            background = pygame.image.load(f"/resources/sprites/loader.gif")
             print(f"Loading room: {room}. Please wait {delay} seconds.")
             time.sleep(delay)
             print(f"Room {room} loaded.")
@@ -162,9 +152,24 @@ def main():
             print("Game over. Press [ENTER] to exit.")
             if event.key == pygame.K_RETURN:
                 load('1')
-        elif location == '1':
-            background = pygame.image.load("/resources/sprites/room1.png")
+        elif location == '0':
+            background = pygame.image.load("/resources/sprites/error.png")
             screen.blit(background, (0, 0))
+
+            # Tilesets should always be created like this.
+            tiles = {
+                1: pygame.image.load('/resources/sprites/grass.png'),
+                2: pygame.image.load('/resources/sprites/dirt.png'),
+                3: pygame.image.load('/resources/sprites/mossybricks.png'),
+            }
+
+            tileset = [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], #Dead space
+                [0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0], #Obstacles
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], #Ground
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], #Dirt, stone, ect...
+            ]
+            draw_tiles(screen, tileset, tiles)
 
             enemy(1, 'draw')
 
@@ -209,7 +214,7 @@ def main():
             
 
         # Enemy handler
-        def enemy(name, func):
+        def enemy(name, func, x, y):
             if func == 'draw':
                 if name == 0:
                     print("Example enemy")
@@ -238,8 +243,8 @@ def main():
         enemy(0)
 
         # Health handler
-        if playerHp == 0:
-            goto('gameover')
+#        if playerHp == 0:
+#            goto('gameover')
 
         player()
         # Code above here
