@@ -1,6 +1,6 @@
 # Grand Ummative
 
-You are a monkey who's goal is to save your one and only friend. Escape the jungle and into the city! But watch out... there are people out there who dont want a whild animal on the streets.
+You are a monkey who's goal is to save your one and only friend. Escape the jungle and into the city! But watch out... there are people out there who dont want a wild animal on the streets.
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/Kinard-Coding-Club/Grand-Ummative)
 ![GitHub contributors](https://img.shields.io/github/contributors/Kinard-Coding-Club/Grand-Ummative)
@@ -37,3 +37,7 @@ You are a monkey who's goal is to save your one and only friend. Escape the jung
 > - Must support batchfile execution
 > - Must be Windows 11
 > - *Also supports windows 10 build 17063*
+
+# Error guide
+## ERROR! BAD TILE!
+This error means that somehow a tile is missing. This error does not negatively affect gameplay in a way where the game is unplayable unless somehow all tiles are missing. If all tiles are missing, you may need to re-install the game.
