@@ -7,7 +7,6 @@ if debug == True:
     print("Importing modules...")
 import traceback
 import sys
-import os
 import random
 import time
 try:
@@ -111,8 +110,16 @@ def main():
                 for col in range(len(tileset[row])):
                     tile_type = tileset[row][col]
                     if tile_type != 0:  # Skip dead space
-                        tile_image = tile_images[tile_type]
+                        try:
+                            tile_image = tile_images[tile_type]
+                        except KeyError:
+                            tile_image = pygame.image.load('/resources/sprites/error.png')
+                            print("ERROR! BAD TILE!")
                         screen.blit(tile_image, (col * tile_size, row * tile_size))
+
+        class scripted():
+            def tile(int):
+                print(f"Loading scripted entity {int}...") # This is just a placeholder for now.
 
 
         # Room LOADER
@@ -161,23 +168,53 @@ def main():
                 1: pygame.image.load('/resources/sprites/grass.png'),
                 2: pygame.image.load('/resources/sprites/dirt.png'),
                 3: pygame.image.load('/resources/sprites/mossybricks.png'),
+                # 1-5 for static tiles, 6-8 for scripted tiles, 9 for spawnpoints. !!!DO NOT DEFINE 9 OR THE GAME WILL BREAK!!!
             }
+
+
 
             tileset = [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], #Dead space
-                [0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0], #Obstacles
+                [0, 9, 0, 0, 3, 0, 5, 0, 0, 0, 0], #Obstacles
                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], #Ground
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], #Dirt, stone, ect...
             ]
+            # Tilesets are always loaded starting with the bottom left corner of the window.
             draw_tiles(screen, tileset, tiles)
 
-            enemy(1, 'draw')
+            enemy(0, 'draw', 150, 150)
+            player(70, 50)
+        elif location == '1':
+            background = pygame.image.load("/resources/sprites/room1.png")
+            screen.blit(background, (0, 0))
+            tiles = {
+                1: pygame.image.load('/resources/sprites/grass.png'),
+                2: pygame.image.load('/resources/sprites/dirt.png'),
+                3: pygame.image.load('/resources/sprites/dark.png'),
+                4: pygame.image.load('/resources/sprites/stonebricks.png'),
+                6: pygame.image.load('/resources/sprites/branch.png')
+            }
+            tileset = [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 9, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 9, 9, 0],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            ]
+            draw_tiles(screen, tileset, tiles)
+            player(70, 50)
+            enemy(1, 'draw', 150, 150)
+
 
         # Remember that the loader, changer, and handler are all different things!
 
+        # -----------------------------------------------------------------------------------------------
+
         # Player handler
-        def player():
+        def player(x, y):
             global playerX, playerY, playerSpeed, playerJump, playerJumping
+
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -198,7 +235,9 @@ def main():
                     playerY = 0
                     playerJumping = False
 
-            player_rect = pygame.Rect(playerX, playerY, 50, 50)
+            player_rect = pygame.Rect(x, y, 50, 50)
+            playerX = x
+            playerY = y
             pygame.draw.rect(screen, (0, 0, 255), player_rect)
             print(f"{line}:Heartbeat {counter}: Player is at {location}")
         
@@ -206,7 +245,7 @@ def main():
         def killPlayer():
             playerHp = 0
             if debug == True:
-                print(f"Got a player kill event. Player HP is now {playerHp}. Debug flag is set, wfi.")
+                print(f"Got a player kill event. Player HP is now {playerHp}. Debug flag is set, wfi().")
                 input("Press enter to continue...")
                 goto('gameover')
             print(f"Got a player kill event. Player HP is now {playerHp}. Debug flag is not set, automatically changing rooms.")
@@ -217,10 +256,11 @@ def main():
         def enemy(name, func, x, y):
             if func == 'draw':
                 if name == 0:
+                    # You cannot destroy enemy 0 without destroying all instances of enemy class. Use for example level only.
                     print("Example enemy")
                     pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(100, 100, 50, 50))
                     player_rect = pygame.Rect(playerX, playerY, 50, 50)
-                    enemy_rect = pygame.Rect(100, 100, 50, 50)
+                    enemy_rect = pygame.Rect(x, y, 50, 50)
                     if player_rect.colliderect(enemy_rect):
                         killPlayer()
                 elif name == 1:
@@ -240,13 +280,6 @@ def main():
                     print("Enemy 1 has been destroyed.")
                 else:
                     print("Error, enemy does not exist.")
-        enemy(0)
-
-        # Health handler
-#        if playerHp == 0:
-#            goto('gameover')
-
-        player()
         # Code above here
         if process != 'null':
             if debug == True:
