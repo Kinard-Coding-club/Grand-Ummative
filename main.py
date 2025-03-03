@@ -29,14 +29,17 @@ def draw_text(text, font, color, surface, x, y):
     textrect.topright = (x, y)
     surface.blit(textobj, textrect)
 
+def log(message):
+    print(f"[{time.strftime('%H:%M:%S', time.localtime())}] {message}")
+
 class action:
     def swing(self, range, event):
-        print("Player swung branch")
+        print("Player:swing action")
         player_rect = pygame.Rect(playerX, playerY, 50, 50)
         swing_area = pygame.draw.circle(screen, (255, 0, 0), (playerX + 25, playerY + 25), range, 1)
         
         if event and player_rect.colliderect(swing_area):
-            print("Swing event triggered within range")
+            log(f"Player connected to swing event")
             player_distance = 100  # Example distance
             move_circle = pygame.draw.circle(screen, (0, 255, 0), (playerX + 25, playerY + 25), player_distance, 1)
             
@@ -100,7 +103,7 @@ class tiles:
 
 class scripted():
     def tile(int, loop, code):
-        print(f"Loading scripted entity {int}...")
+        log(f"Attatching tileID:{int} to action:{code}")
         if loop:
             while True:
                 code
@@ -113,21 +116,21 @@ class room:
         location = 'loader'
         delay = random.randint(5.488284992856903965939920395039320, 9.99958274958375684993874895874892379875432)
         background = pygame.image.load(f"/resources/sprites/loader.gif")
-        print(f"Loading room: {roomToLoad}. Please wait {delay} seconds.")
+        log(f"...{roomToLoad}")
         time.sleep(delay)
-        print(f"Room {roomToLoad} loaded.")
-        location = room
+        location = roomToLoad
 
     def goto(room):
         global location
-        print(f"Room has been changed to Room changed to {room}")
+        print(f"Attempting to relocate to location:{room}")
         enemy.destroy('all')
         player.destroy()
         location = room
+        log(f"Location has been set to location:{room}")
 
 class player:
     def destroy():
-        print("Player has been destroyed")
+        log(f"Destroyed player entity")
     
     def kill():
         global playerHp
@@ -165,7 +168,7 @@ class player:
         action2 = pygame.image.load(f'/resources/sprites/player_{handle2}.gif') # Remember to keep consistent naming between sprite files and handle definition or it wont find the files!
         player_rect = pygame.Rect(x, y, 50, 50)
         screen.blit(idle, player_rect.topleft)
-        print(f"Player drawn at {x}, {y}")
+        log(f"Entity player:player created at {x}, {y} with {handle1} and {handle2}")
 
         # Handle player actions
         keys = pygame.key.get_pressed()
@@ -209,26 +212,26 @@ class enemy:
     
     def draw(id, x, y, takesDamage):
         try:
-            print(f"Enemy {id} has been spawned at {x}, {y}.")
+            log(f"Entity enemy:{id} has been drawn at {x}, {y}")
             pygame.draw.rect(screen, 255, 0, 0), pygame.rect(100, 100, 50, 50)
             player_rect = pygame.Rect(playerX, playerY, 50, 50)
             enemy_rect = pygame.rect(x, y, 50, 50)
             if player_rect.colliderect(enemy_rect):
                 room.goto('gameover')
         except Exception as e:
-            print(f"Failed to load entity: {e}")
+            print(f"Failed to load entity:{id}: {e}")
     
     def destroy(id):
         if id == 'all'.lower():
             for enemy_id in list(enemy.enemies.keys()):
                 del enemy.enemies[enemy_id]
-            print("All enemies have been destroyed.")
+            log(f"Called destruction event for all entities")
         else:
             if id in enemy.enemies:
                 del enemy.enemies[id]
-                print(f"Enemy {id} has been destroyed.")
+                log(f"Entity destruction called for entity:{id}")
             else:
-                print(f"Enemy {id} does not exist.")
+                print(f"Enemy {id} is out of range.")
 
 def main():
     global counter, line, last, process, key, location  # Declare global variables
@@ -363,7 +366,7 @@ def main():
             tiles.draw(screen, tileset, tiles)
             player.draw(70, 50, 'player', 'player')
             enemy.draw(1, 150, 150, True)
-            scripted.tile(5, True, action.swing(10, "e"))
+            scripted.tile(6, True, action.swing(10, "e"))
 
     pygame.quit()
     sys.exit()
