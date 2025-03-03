@@ -23,6 +23,67 @@ playerJumping = False
 screen = None
 
 #Start
+def draw_text(text, font, color, surface, x, y):
+    textobj = font.render(text, True, color)
+    textrect = textobj.get_rect()
+    textrect.topright = (x, y)
+    surface.blit(textobj, textrect)
+
+class action:
+    def swing(self, range, event):
+        print("Player swung branch")
+        player_rect = pygame.Rect(playerX, playerY, 50, 50)
+        swing_area = pygame.draw.circle(screen, (255, 0, 0), (playerX + 25, playerY + 25), range, 1)
+        
+        if event and player_rect.colliderect(swing_area):
+            print("Swing event triggered within range")
+            player_distance = 100  # Example distance
+            move_circle = pygame.draw.circle(screen, (0, 255, 0), (playerX + 25, playerY + 25), player_distance, 1)
+            
+            # Confine the player to the circle line created for the swing
+            while event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                keys = pygame.key.get_pressed()
+                angle = 0
+                if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                    playerX -= playerSpeed
+                    angle -= playerSpeed
+                if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                    angle += playerSpeed
+
+                playerX = (playerX + 25) + player_distance * pygame.math.cos(angle) - 25
+                playerY = (playerY + 25) + player_distance * pygame.math.sin(angle) - 25
+
+                player_rect = pygame.Rect(playerX, playerY, 50, 50)
+                screen.fill((0, 0, 0))  # Clear screen
+                move_circle = pygame.draw.circle(screen, (0, 255, 0), (playerX + 25, playerY + 25), player_distance, 1)
+                pygame.draw.rect(screen, (255, 0, 0), player_rect)
+                pygame.display.flip()
+            move_circle = pygame.draw.circle(screen, (0, 255, 0), (playerX + 25, playerY + 25), player_distance, 1)
+            
+            while event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                    playerX -= playerSpeed
+                if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                    playerX += playerSpeed
+                if keys[pygame.K_UP] or keys[pygame.K_w]:
+                    playerY -= playerSpeed
+                if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                    playerY += playerSpeed
+
+                player_rect = pygame.Rect(playerX, playerY, 50, 50)
+                if not move_circle.colliderect(player_rect):
+                    # Prevent player from moving outside the circle
+                    if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                        playerX += playerSpeed
+                    if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                        playerX -= playerSpeed
+                    if keys[pygame.K_UP] or keys[pygame.K_w]:
+                        playerY += playerSpeed
+                    if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                        playerY -= playerSpeed
+
+                screen.fill((0, 0, 0))  
 class tiles:
     def drawscreen(self, tileset, tile_images):
         for row in range(len(tileset)):
@@ -38,14 +99,19 @@ class tiles:
 
 
 class scripted():
-    def tile(int):
-        print(f"Loading scripted entity {int}...") # This is just a placeholder for now.
-
+    def tile(int, loop, code):
+        print(f"Loading scripted entity {int}...")
+        if loop:
+            while True:
+                code
+        else:
+            code
+        
 class room:
     def load(roomToLoad):
         global location
         location = 'loader'
-        delay = random.randint(5, 8)
+        delay = random.randint(5.488284992856903965939920395039320, 9.99958274958375684993874895874892379875432)
         background = pygame.image.load(f"/resources/sprites/loader.gif")
         print(f"Loading room: {roomToLoad}. Please wait {delay} seconds.")
         time.sleep(delay)
@@ -55,8 +121,9 @@ class room:
     def goto(room):
         global location
         print(f"Room has been changed to Room changed to {room}")
+        enemy.destroy('all')
+        player.destroy()
         location = room
-        enemy(0, 'destroy')
 
 class player:
     def destroy():
@@ -94,6 +161,8 @@ class player:
         }
         idle = pygame.image.load('/resources/sprites/player.gif')
         walking = pygame.image.load('/resources/sprites/player_walk.gif')
+        action1 = pygame.image.load(f'/resources/sprites/player_{handle1}.gif')
+        action2 = pygame.image.load(f'/resources/sprites/player_{handle2}.gif') # Remember to keep consistent naming between sprite files and handle definition or it wont find the files!
         player_rect = pygame.Rect(x, y, 50, 50)
         screen.blit(idle, player_rect.topleft)
         print(f"Player drawn at {x}, {y}")
@@ -122,8 +191,8 @@ class enemy:
     enemies = {
         0: {
             'name': 'Example enemy',
-            'idle-anim': '/resources/sprites/enemy1.gif',
-            'attack-anim': '/resources/sprites/enemy1_attack.gif',
+            'idle-anim': '/resources/sprites/example.gif',
+            'attack-anim': '/resources/sprites/attack_example.gif',
             'health': '100',
             'speed': '0', # 0 is stationary, does not require a movement gif
             'damage': '100'
@@ -220,6 +289,9 @@ def main():
         pygame.display.flip()
         # Code under here
 
+        if debug == True:
+            draw_text('Dev mode', pygame.font.Font(None, 20), (255, 255, 255), screen, 790, 0)
+            
         # Room HANDLER
         if location == 'Menu':
             # Code to draw the menu room
@@ -259,6 +331,12 @@ def main():
                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], #Ground
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], #Dirt, stone, ect...
             ]
+
+            def test():
+                print("Player swung branch")
+            
+            scripted.tile(5, True, test())
+
             # Tilesets are always loaded starting with the bottom left corner of the window.
             tiles.draw(screen, tileset, tiles)
 
@@ -285,10 +363,10 @@ def main():
             tiles.draw(screen, tileset, tiles)
             player.draw(70, 50, 'player', 'player')
             enemy.draw(1, 150, 150, True)
+            scripted.tile(5, True, action.swing(10, "e"))
 
     pygame.quit()
     sys.exit()
-    print(10/0) # This line will never be reached as it is placed after an exit statement. Its just a joke.
 
 if __name__ == "__main__":
     try:
