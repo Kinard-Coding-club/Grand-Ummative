@@ -1,34 +1,11 @@
 #headers
-print("----- DO NOT CLOSE THIS WINDOW! -----")
-global debug
-debug = True
-if debug == True:
-    print("Debug mode is enabled.")
-    print("Importing modules...")
-import traceback
 import sys
 import random
 import time
-try:
-    import pygame
-    if not pygame.display.get_init():
-        raise ImportError("Pygame display module could not be initialized.")
-except ImportError as e:
-    print(f"Error: {e}")
-    if debug == True:
-        print("Logic and console will still execute.")
-    else:
-        print("Exiting...")
-        sys.exit()
-#Headers end
-def log(Message):
-    if debug == True:
-        print(Message)
-    else:
-        pass
-log('Initalizing variables...')
+import pygame
+
 # Initialize all variables
-global counter, line, last, process, key, location, playerHp, playerX, playerY, playerSpeed, playerJump, playerJumping, tile_size
+global screen, counter, line, last, process, key, location, playerHp, playerX, playerY, playerSpeed, playerJump, playerJumping, tile_size
 debug = False
 tile_size = 128
 counter = 0
@@ -43,40 +20,43 @@ playerY = 0
 playerSpeed = 5
 playerJump = 10
 playerJumping = False
-#Start
-log("Variables have been initialized. Press [ENTER] at any time to dump variables.")
+screen = None
 
-def draw_tiles(screen, tileset, tile_images):
-    for row in range(len(tileset)):
-        for col in range(len(tileset[row])):
-            tile_type = tileset[row][col]
-            if tile_type != 0:  # Skip dead space
-                try:
-                    tile_image = tile_images[tile_type]
-                except KeyError:
-                    tile_image = pygame.image.load('/resources/sprites/error.png')
-                    print("ERROR! BAD TILE!")
-                screen.blit(tile_image, (col * tile_size, row * tile_size))
+#Start
+class tiles:
+    def drawscreen(self, tileset, tile_images):
+        for row in range(len(tileset)):
+            for col in range(len(tileset[row])):
+                tile_type = tileset[row][col]
+                if tile_type != 0:  # Skip dead space
+                    try:
+                        tile_image = tile_images[tile_type]
+                    except KeyError:
+                        tile_image = pygame.image.load('/resources/sprites/error.png')
+                        print("ERROR! BAD TILE!")
+                    screen.blit(tile_image, (col * tile_size, row * tile_size))
+
 
 class scripted():
     def tile(int):
         print(f"Loading scripted entity {int}...") # This is just a placeholder for now.
 
-def load(room):
-    global location
-    location = 'loader'
-    delay = random.randint(5, 8)
-    background = pygame.image.load(f"/resources/sprites/loader.gif")
-    print(f"Loading room: {room}. Please wait {delay} seconds.")
-    time.sleep(delay)
-    print(f"Room {room} loaded.")
-    location = room
+class room:
+    def load(roomToLoad):
+        global location
+        location = 'loader'
+        delay = random.randint(5, 8)
+        background = pygame.image.load(f"/resources/sprites/loader.gif")
+        print(f"Loading room: {roomToLoad}. Please wait {delay} seconds.")
+        time.sleep(delay)
+        print(f"Room {roomToLoad} loaded.")
+        location = room
 
-def goto(room):
-    global location
-    print(f"Room has been changed to Room changed to {room}")
-    location = room
-    enemy(0, 'destroy')
+    def goto(room):
+        global location
+        print(f"Room has been changed to Room changed to {room}")
+        location = room
+        enemy(0, 'destroy')
 
 class player:
     def destroy():
@@ -86,12 +66,12 @@ class player:
         global playerHp
         playerHp = 0
         if debug != True:
-            goto('gameover')
+            room.goto('gameover')
         else:
             print(f"Player has been killed. Player HP is now {playerHp}. Debug flag is set, wfi().")
             value = input("Continue? [Y/N]: ").lower()
             if value == 'y':
-                goto('gameover')
+                room.goto('gameover')
             else:
                 print("Exiting...")
                 sys.exit()
@@ -165,7 +145,7 @@ class enemy:
             player_rect = pygame.Rect(playerX, playerY, 50, 50)
             enemy_rect = pygame.rect(x, y, 50, 50)
             if player_rect.colliderect(enemy_rect):
-                goto('gameover')
+                room.goto('gameover')
         except Exception as e:
             print(f"Failed to load entity: {e}")
     
@@ -254,13 +234,13 @@ def main():
             
             if play_button_rect.collidepoint(mouse_pos):
                 if mouse_click[0]:  # Left mouse button clicked
-                    load(1)
+                    room.load(1)
         elif location == 'gameover':
             background = pygame.image.load("/resources/sprites/gameover.png")
             screen.blit(background, (0, 0))
             print("Game over. Press [ENTER] to exit.")
             if event.key == pygame.K_RETURN:
-                load('1')
+                room.load('1')
         elif location == '0':
             background = pygame.image.load("/resources/sprites/error.png")
             screen.blit(background, (0, 0))
@@ -280,7 +260,7 @@ def main():
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], #Dirt, stone, ect...
             ]
             # Tilesets are always loaded starting with the bottom left corner of the window.
-            draw_tiles(screen, tileset, tiles)
+            tiles.draw(screen, tileset, tiles)
 
             enemy(0, 'draw', 150, 150)
             player(70, 50)
@@ -302,7 +282,7 @@ def main():
                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ]
-            draw_tiles(screen, tileset, tiles)
+            tiles.draw(screen, tileset, tiles)
             player.draw(70, 50, 'player', 'player')
             enemy.draw(1, 150, 150, True)
 
