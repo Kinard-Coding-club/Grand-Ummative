@@ -6,14 +6,14 @@ import pygame
 
 # Initialize all variables
 global screen, counter, line, last, process, key, location, playerHp, playerX, playerY, playerSpeed, playerJump, playerJumping, tile_size
-debug = False
+debug = True
 tile_size = 128
 counter = 0
 line = 0
 last = 'null'
 process = 'null'
 key = 'null'
-location = 'loader'
+location = 'menu'
 playerHp = 100
 playerX = 0
 playerY = 0
@@ -34,7 +34,7 @@ def log(message):
 
 class action:
     def swing(self, range, event):
-        print("Player:swing action")
+        log(f"Player swung on branch")
         player_rect = pygame.Rect(playerX, playerY, 50, 50)
         swing_area = pygame.draw.circle(screen, (255, 0, 0), (playerX + 25, playerY + 25), range, 1)
         
@@ -103,12 +103,15 @@ class tiles:
 
 class scripted():
     def tile(int, loop, code):
-        log(f"Attatching tileID:{int} to action:{code}")
-        if loop:
+        log(f"Attatching tileID:{int} to action:{code} loop:{loop}")
+        if loop == True:
             while True:
                 code
+        elif loop != True:
+            for i in range(loop):
+                code
         else:
-            code
+            print(f"Error in scripted.tile({int}{loop}{code}) {loop} Is not a boolean or an integer.")
         
 class room:
     def load(roomToLoad):
@@ -186,7 +189,7 @@ class player:
 
         if playerJumping:
             playerY += playerJump // 2  # Simulate gravity
-            if playerY >= 0:  # Assuming ground level is y = 0
+            if playerY >= 30:  # Assuming ground level is y = 0
                 playerY = 0
                 playerJumping = False
 
@@ -207,6 +210,14 @@ class enemy:
             'health': '*', # Means that this enemy cannot be killed
             'speed': '0',
             'damage': f'{playerHp}'
+        },
+        2: {
+            'name': 'Bat',
+            'idle-anim': '/resources/sprites/bat.gif',
+            'attack-anim': '/resources/sprites/bat.gif',
+            'health': '30', #You probably whack it with a stick a few times
+            'speed': '50',
+            'damage': '20'
         }
     }
     
@@ -298,6 +309,7 @@ def main():
         # Room HANDLER
         if location == 'Menu':
             # Code to draw the menu room
+            log("Drawn room: menu")
             background = pygame.image.load("/resources/sprites/menu.png")
             screen.blit(background, (0, 0))
             play_button = pygame.image.load("/resources/sprites/play_button.png")
@@ -367,6 +379,7 @@ def main():
             player.draw(70, 50, 'player', 'player')
             enemy.draw(1, 150, 150, True)
             scripted.tile(6, True, action.swing(10, "e"))
+            log("Loaded room 1")
 
     pygame.quit()
     sys.exit()
@@ -379,6 +392,11 @@ if __name__ == "__main__":
         if debug == True:
             print("All other logic will be executed.")
         else:
+            counter = 10
+            while counter > 0:
+                print(f"Exiting in {counter} seconds...")
+                time.sleep(1)
             print("Exiting...")
+            time.sleep(1)
             sys.exit()
 #end
